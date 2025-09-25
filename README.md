@@ -1,16 +1,9 @@
-# React + Vite
+# Heard Of?
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Um app. baseado em arquiteturas web SPA que permite a procura de artistas com base em seus gostos musicais. Realizado com o propósito de estudo da disciplina de desenvolvimento Fullstack, utilizando ReactJS, AJAX para requisições de API e diferentes Libs complementares.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## React Compiler
+## TasteDive
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+O Heard Of? consome e faz requisições da [API TasteDive](https://tastedive.com/) que nos permite acessar uma abrangente quantia de dados envolvendo artistas musicais, musicas e albuns.
