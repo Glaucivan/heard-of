@@ -1,0 +1,17 @@
+import { useState } from 'react'
+
+
+//import 'Header.css'
+import SearchBar from './SearchBar.jsx'
+
+
+function Header(props) {
+
+    return <header className="hbox" id="header">
+        <h1>HeardOf</h1>
+        <SearchBar/>
+        <a href="">Sobre</a>
+    </header>
+}
+
+export default Header;
