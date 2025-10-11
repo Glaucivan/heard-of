@@ -5,7 +5,7 @@ import { useState } from 'react'
 import SearchBar from './SearchBar.jsx'
 
 
-function Header(props) {
+function Header() {
 
     return <header className="hbox" id="header">
         <h1>HeardOf</h1>

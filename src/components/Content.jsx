@@ -1,15 +1,23 @@
 import { useContext } from 'react'
-import { ListaContext } from '../contexts/Lista'
+import Item from './Item'
+import { Grid } from '@mui/material'
+import ListContext from '../contexts/List'
 
 function Content(){
-    const lista = useContext(ListaContext)
-    console.log(lista)
+    const { list } = useContext(ListContext)
+    const contentList = list.map((itemObj, idx) => (
+        <Item
+            name={itemObj.name}
+            yID={itemObj.yID}
+            key={idx}
+        />
+    ))
+    console.log(contentList)
     return (
         <main className='list' id='content'>
-            <div>{lista}</div>
-            <ul></ul>
+            <Grid><ul>{contentList}</ul></Grid>
         </main>
     )
 }
 
-export default Content;
+export default Content

@@ -63,6 +63,11 @@ html, body, #root {
   width: 100%;
 }
 
+.song-layout{
+  display:flex;
+  flex-direction: column;
+}
+
 .read-the-docs {
   color: #888;
 }
