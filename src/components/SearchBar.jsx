@@ -3,9 +3,12 @@ import ListContext from '../contexts/List';
 import { TextField, Button } from '@mui/material'
 
 const httpRequest = async(query) => {
+    // QUERY Placeholder
+    const artista = query;
+    const musica = query;
 
     const URI = "https://tastedive.com/api/similar"
-                +`?q=${encodeURI(query)}`
+                +`?q=music:${encodeURI(query)}`
                 +"&type=music"
                 +"&info=1"
                 +"&limit=10"
@@ -20,6 +23,7 @@ const httpRequest = async(query) => {
             ////******console.log("1-RES. SUCESSFULL")
             ////******console.log("2-RES AFTER FETCH: ", res)
             const data = await res.json()
+            console.log(data)
             ////******console.log("3-DATA: ", data)
             ////******console.log("4-RESULTS ARRAY: ", data.similar.results)
             return data.similar.results;
@@ -53,8 +57,8 @@ function SearchBar(){
         backgroundColor:"#f7f7f7ff",
         color: "#2c2736",
         width: "100px"
-    },
-    input_sx = {
+    }
+    const input_sx = {
         '& .MuiInputBase-input.MuiOutlinedInput-input': { color: "white" },
         width: "100%",
         marginLeft: "15px"
@@ -62,7 +66,7 @@ function SearchBar(){
 
     return (
         <div id="search_bar">
-            <TextField variant="outlined" value={input} sx={input_sx} placeholder='search' onChange={change} onKeyDown={keyDown} />
+            <TextField variant="outlined" value={input} sx={input_sx} placeholder='Type a musical artist' onChange={change} onKeyDown={keyDown} />
         </div>
     )
 }

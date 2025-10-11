@@ -12,7 +12,7 @@ function Content(){
             key={idx}
         />
     ))
-    console.log(contentList)
+    /////*****console.log(contentList)
     return (
         <main className='list' id='content'>
             <Grid><ul>{contentList}</ul></Grid>
