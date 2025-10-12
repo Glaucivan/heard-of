@@ -1,6 +1,8 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import ListContext from '../contexts/List';
-import { TextField, Button } from '@mui/material'
+import LoadContext from '../contexts/Loading';
+import ErrorContext from '../contexts/Error';
+import { TextField, Button } from '@mui/material';
 
 const httpRequest = async(query) => {
     // QUERY Placeholder
@@ -14,42 +16,69 @@ const httpRequest = async(query) => {
                 +"&limit=10"
                 +"&slimit=3"
                 +"&k=1060212-HeardOf-8673E0A3"
-    const proxyURI = "https://cors-anywhere.com/"
+    const proxyURI = "https://cors-anywhere.com/";
     try{
         // HTTP REQUEST to DIVE API
         const res = await fetch(proxyURI+URI);
         ////*****console.log("REQ. MADE")
         if (res.ok){
-            ////******console.log("1-RES. SUCESSFULL")
-            ////******console.log("2-RES AFTER FETCH: ", res)
-            const data = await res.json()
-            console.log(data)
-            ////******console.log("3-DATA: ", data)
-            ////******console.log("4-RESULTS ARRAY: ", data.similar.results)
+            const data = await res.json();
+            console.log(data);
             return data.similar.results;
         }
+        else
+            throw new Error(`Failed: ${res.status} Error on trying to request from API.`);
     }
     catch(err){
-        console.log(err.message)
-        return null
+        throw err;
     }
-
 }
 
 function SearchBar(){
-    const [ input, setInput ] = useState(''),
-          { list, setList } = useContext(ListContext);
-    
+    const   [ input, setInput ] = useState(''),
+            [ requisitionState, setRequisitionState ] = useState(null);
 
-    const change = (ev) => { setInput(ev.target.value) }
+    const   { setList } = useContext(ListContext),
+            { loadState, setLoadState } = useContext(LoadContext),
+            { error, setError } = useContext(ErrorContext);
+
+    const change = (ev) => { setInput(ev.target.value) };
+
+    useEffect(()=>{
+        if (requisitionState === "ongoing"){
+            let timer_id = setInterval(async () => {
+                if(!loadState) setLoadState(true);
+                try{
+                    const data = await httpRequest(input);
+                    setList(data);
+                    setLoadState(false);
+                    setRequisitionState(null);
+                }
+                catch(err){
+                    console.log(`${err.message} Trying again in 5s`);
+                    setError({origin: "DiveAPIFetch", error: new Error(`${err.message} Trying again in 5s.`)});
+                }
+            }, 5000);
+
+            return () => {
+                console.log("Interval cleanse");
+                clearInterval(timer_id);
+                setLoadState(false);
+            }
+        }
+    }, [requisitionState])
 
     const keyDown = async (ev) => {
         if(ev.keyCode == 13){
-            let data = await httpRequest(input)
-            if (data)
-                setList(data)
-                console.log("CONTEXT set: ", list)
-                console.log("DATA to CONTEXT: ", data)
+            try{
+                if (input.length == 0)
+                    throw new Error("Entrada deve incluir o nome de um artista.")
+                setLoadState(true);
+                setRequisitionState("ongoing");
+            }
+            catch(err){
+                alert(err.message);
+            }
         }
     }
 
@@ -66,9 +95,9 @@ function SearchBar(){
 
     return (
         <div id="search_bar">
-            <TextField variant="outlined" value={input} sx={input_sx} placeholder='Type a musical artist' onChange={change} onKeyDown={keyDown} />
+            <TextField variant="outlined" value={input} sx={input_sx} placeholder="Type a musical artist. (e.g.: Anri, Draft Punk, Nirvana...)" onChange={change} onKeyDown={keyDown} />
         </div>
     )
 }
 
-export default SearchBar;
+export default SearchBar

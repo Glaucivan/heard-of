@@ -10,8 +10,8 @@ function Header() {
     return <header className="hbox" id="header">
         <h1>HeardOf</h1>
         <SearchBar/>
-        <a href="">Sobre</a>
+        <a href="#Footer">About</a>
     </header>
 }
 
-export default Header;
+export default Header

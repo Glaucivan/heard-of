@@ -2,55 +2,29 @@ import { useState } from 'react'
 import './App.css'
 import Header from './Header.jsx'
 import Content from './Content.jsx'
+import Footer from './Footer.jsx'
 import ListContext from '../contexts/List.jsx'
+import LoadContext from '../contexts/Loading.jsx'
+import ErrorContext from '../contexts/Error.jsx'
 
 function App() {
-  const [list, setList] = useState([])
-  console.log("VARIAVEL.... LISTA APP: ", list)
+  const [list, setList] = useState([]);
+  const [error, setError] = useState(null);
+  const [loadState, setLoadState] = useState(false);
 
   return (
     <>
-      <ListContext.Provider value={{list, setList}}>
-        <Header />
-        <Content />
-      </ListContext.Provider>
+      <ErrorContext.Provider value={{error, setError}}>
+        <LoadContext.Provider value={{loadState, setLoadState}}>
+          <ListContext.Provider value={{list, setList}}>
+            <Header />
+            <Content />
+            <Footer />
+          </ListContext.Provider>
+        </LoadContext.Provider>
+      </ErrorContext.Provider>
     </>
   )
 }
 
-export default App;
-
-
-
-
-/*
-                       .,,uod8B8bou,,.
-              ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.
-         ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||
-         !...:!TVBBBRPFT||||||||||!!^^""'   ||||
-         !.......:!?|||||!!^^""'            ||||
-         !.........||||                     ||||
-         !.........||||  ##                 ||||
-         !.........||||                     ||||
-         !.........||||                     ||||
-         !.........||||                     ||||
-         !.........||||                     ||||
-         `.........||||                    ,||||
-          .;.......||||               _.-!!|||||
-   .,uodWBBBBb.....||||       _.-!!|||||||||!:'
-!YBBBBBBBBBBBBBBb..!|||:..-!!|||||||!iof68BBBBBb....
-!..YBBBBBBBBBBBBBBb!!||||||||!iof68BBBBBBRPFT?!::   `.
-!....YBBBBBBBBBBBBBBbaaitf68BBBBBBRPFT?!:::::::::     `.
-!......YBBBBBBBBBBBBBBBBBBBRPFT?!::::::;:!^"`;:::       `.
-!........YBBBBBBBBBBRPFT?!::::::::::^''...::::::;         iBBbo.
-`..........YBRPFT?!::::::::::::::::::::::::;iof68bo.      WBBBBbo.
-  `..........:::::::::::::::::::::::;iof688888888888b.     `YBBBP^'
-    `........::::::::::::::::;iof688888888888888888888b.     `
-      `......:::::::::;iof688888888888888888888888888888b.
-        `....:::;iof688888888888888888888888888888888899fT!
-          `..::!8888888888888888888888888888888899fT|!^"'
-            `' !!988888888888888888888888899fT|!^"'
-                `!!8888888888888888899fT|!^"'
-                  `!988888888899fT|!^"'
-                    `!9899fT|!^"'
-*/
+export default App

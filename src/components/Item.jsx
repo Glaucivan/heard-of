@@ -5,15 +5,12 @@ function Item(props){
 
     return (
         <li className="song-layout" id={key}>
-                <iframe src={srcUrl} width={640} height={450}/>
+                <iframe src={srcUrl} width={480} height={270}/>
                 <div className="">
                     <span>
                         {name}
                     </span>
-                    <span>
-                    </span>
                 </div>
-            <span>bla bla bla</span>
         </li>
     )
 }
