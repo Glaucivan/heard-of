@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import ListContext from '../contexts/List';
 import LoadContext from '../contexts/Loading';
 import ErrorContext from '../contexts/Error';
@@ -8,7 +8,6 @@ const httpRequest = async(query) => {
     // QUERY Placeholder
     const artista = query;
     const musica = query;
-
     const URI = "https://tastedive.com/api/similar"
                 +`?q=music:${encodeURI(query)}`
                 +"&type=music"
@@ -16,18 +15,22 @@ const httpRequest = async(query) => {
                 +"&limit=10"
                 +"&slimit=3"
                 +"&k=1060212-HeardOf-8673E0A3"
-    const proxyURI = "https://cors-anywhere.com/";
+    const proxy = "https://corsproxy.io/?url=";
     try{
+        /* Random Error Thrower
+        if(Math.random() >= 0.5){
+            throw new Error('ForcedError.');
+        }
+        */
         // HTTP REQUEST to DIVE API
-        const res = await fetch(proxyURI+URI);
-        ////*****console.log("REQ. MADE")
+        const res = await fetch(proxy + encodeURI(URI));
         if (res.ok){
             const data = await res.json();
             console.log(data);
             return data.similar.results;
         }
         else
-            throw new Error(`Failed: ${res.status} Error on trying to request from API.`);
+            throw new Error(`Failed: ${res.status}. Error on trying to request from Proxy/API.`);
     }
     catch(err){
         throw err;
@@ -40,10 +43,11 @@ function SearchBar(){
 
     const   { setList } = useContext(ListContext),
             { loadState, setLoadState } = useContext(LoadContext),
-            { error, setError } = useContext(ErrorContext);
+            { error, addError, delError } = useContext(ErrorContext);
 
     const change = (ev) => { setInput(ev.target.value) };
 
+    let try_counter = useRef(0);
     useEffect(()=>{
         if (requisitionState === "ongoing"){
             let timer_id = setInterval(async () => {
@@ -53,31 +57,41 @@ function SearchBar(){
                     setList(data);
                     setLoadState(false);
                     setRequisitionState(null);
+                    delError("DiveAPIFetch");
                 }
                 catch(err){
-                    console.log(`${err.message} Trying again in 5s`);
-                    setError({origin: "DiveAPIFetch", error: new Error(`${err.message} Trying again in 5s.`)});
+                    let message = `${err.message} Trying again in 5s.`
+                    console.log(message);
+
+                    if (try_counter.current >= 1)
+                        message = message.concat(` (${try_counter.current})`);
+
+                    try_counter.current += 1;
+                    addError({origin: "DiveAPIFetch", error: new Error(message)});
                 }
             }, 5000);
 
             return () => {
                 console.log("Interval cleanse");
                 clearInterval(timer_id);
-                setLoadState(false);
             }
         }
-    }, [requisitionState])
+    }, [requisitionState, addError, delError])
 
     const keyDown = async (ev) => {
         if(ev.keyCode == 13){
             try{
                 if (input.length == 0)
-                    throw new Error("Entrada deve incluir o nome de um artista.")
+                    throw new Error("Input must include an artist name.")
+                else
+                    delError("SearchBarInput");
+
                 setLoadState(true);
+                try_counter.current = 0;
                 setRequisitionState("ongoing");
             }
             catch(err){
-                alert(err.message);
+                addError({origin: "SearchBarInput", error: err})
             }
         }
     }

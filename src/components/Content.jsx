@@ -17,23 +17,22 @@ function Content(){
         />
     ))
     
-    const { error, setError } = useContext(ErrorContext);
     const { loadState } = useContext(LoadContext);
 
-    const showErrorMsg = (error) => {
-        if (error && error.origin === "DiveAPIFetch")
-            return error.error.message
-        return null
-    }
-    const isErrorVisible = (error) => {
-        return ((error && error.origin === "DiveAPIFetch") ? "visible" : "hidden");
-    }
+    const { error } = useContext(ErrorContext);
+    // Função anônima. Se auto-chama para verificar se há erros.
+    // Procura pela existência do erro de origem DiveAPIFetch.
+    const fetchError = (() => {
+        if(error) return error.find(err => err.origin === "DiveAPIFetch") || null
+    })()
 
     return (
         <main className='list' id='content'>
             <div id="load" className={loadState ? "visible" : "hidden"}>
                 <Loading id="loading">Loading...</Loading>
-                <Error className={isErrorVisible(error)} id="error">{showErrorMsg(error)}</Error>
+                <Error className={fetchError ? "visible" : "hidden"} id="error">
+                        {fetchError ? fetchError.error.message : null}
+                </Error>
             </div>
             <Grid sx={{
                 display: loadState ? "none" : "block"
