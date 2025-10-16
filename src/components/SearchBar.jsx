@@ -2,7 +2,7 @@ import { useState, useContext, useEffect, useRef } from 'react';
 import ListContext from '../contexts/List';
 import LoadContext from '../contexts/Loading';
 import ErrorContext from '../contexts/Error';
-import { TextField, Button } from '@mui/material';
+import { TextField, FormControl, FormHelperText } from '@mui/material';
 
 const httpRequest = async(query) => {
     // QUERY Placeholder
@@ -107,9 +107,27 @@ function SearchBar(){
         marginLeft: "15px"
     }
 
+    const searchError = (() => {
+        if(error) return error.find(err => err.origin === "SearchBarInput") || null
+    })()
+    
     return (
         <div id="search_bar">
-            <TextField variant="outlined" value={input} sx={input_sx} placeholder="Type a musical artist. (e.g.: Anri, Draft Punk, Nirvana...)" onChange={change} onKeyDown={keyDown} />
+            <FormControl error={searchError ? true : false} fullWidth>
+                <TextField 
+                    variant="outlined" 
+                    value={input} 
+                    sx={input_sx} 
+                    placeholder="Type a musical artist. (e.g.: Anri, Draft Punk, Nirvana...)" 
+                    onChange={change} 
+                    onKeyDown={keyDown} 
+                />
+                <FormHelperText sx={{'& .MuiFormHelperText-root' : {
+                    position : 'absolute',
+                    bottom : '-1rem'
+                }}}
+                error={true}>{searchError ? searchError.error.message : null}</FormHelperText>
+            </FormControl>
         </div>
     )
 }
