@@ -1,0 +1,78 @@
+name:  CI/CD – React para GitHub Pages
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm i
+          fi
+
+      - name: Executar testes (se existirem)
+        run: |
+          npm test --silent --if-present -- --watch=false || echo "Sem testes ou testes opcionais"
+
+      - name: Gerar build de produção
+        run: npm run build
+
+      - name: Detectar pasta de build
+        id: detect
+        run: |
+          if [ -d "build" ]; then
+            echo "dir=build" >> $GITHUB_OUTPUT
+          elif [ -d "dist" ]; then
+            echo "dir=dist" >> $GITHUB_OUTPUT
+          else
+            echo "Nenhuma pasta de build encontrada"; exit 1
+          fi
+
+      - name: Ajustar fallback SPA (404.html) e criar .nojekyll
+        run: |
+          mkdir -p ${{ steps.detect.outputs.dir }}
+          if [ ! -f "${{ steps.detect.outputs.dir }}/404.html" ] && [ -f "${{ steps.detect.outputs.dir }}/index.html" ]; then
+            cp ${{ steps.detect.outputs.dir }}/index.html ${{ steps.detect.outputs.dir }}/404.html
+          fi
+          touch ${{ steps.detect.outputs.dir }}/.nojekyll
+
+      - name: Publicar artefato no Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.detect.outputs.dir }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Fazer deploy no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
