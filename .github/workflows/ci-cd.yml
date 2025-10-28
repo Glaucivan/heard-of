@@ -18,16 +18,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Obter código do repositório
+      - name: Obtém código do repositório
         uses: actions/checkout@v4
 
-      - name: Configurar Node.js 20
+      - name: Configura Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: Instalar dependências
+      - name: Instala dependências
         run: |
           if [ -f package-lock.json ]; then
             npm ci
@@ -35,14 +35,14 @@ jobs:
             npm i
           fi
 
-      - name: Executar testes (se existirem)
+      - name: Executa testes (se existirem)
         run: |
           npm test --silent --if-present -- --watch=false || echo "Sem testes ou testes opcionais"
 
-      - name: Gerar build de produção
+      - name: Gera o build de produção
         run: npm run build
 
-      - name: Detectar pasta de build
+      - name: Detecta pasta de build
         id: detect
         run: |
           if [ -d "build" ]; then
@@ -53,7 +53,7 @@ jobs:
             echo "Nenhuma pasta de build encontrada"; exit 1
           fi
 
-      - name: Ajustar fallback SPA (404.html) e criar .nojekyll
+      - name: Ajusta fallback SPA (404.html) e criar .nojekyll
         run: |
           mkdir -p ${{ steps.detect.outputs.dir }}
           if [ ! -f "${{ steps.detect.outputs.dir }}/404.html" ] && [ -f "${{ steps.detect.outputs.dir }}/index.html" ]; then
@@ -61,7 +61,7 @@ jobs:
           fi
           touch ${{ steps.detect.outputs.dir }}/.nojekyll
 
-      - name: Publicar artefato no Pages
+      - name: Publica artefato no Pages
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ steps.detect.outputs.dir }}
@@ -73,6 +73,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Fazer deploy no GitHub Pages
+      - name: Faz deploy no GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
